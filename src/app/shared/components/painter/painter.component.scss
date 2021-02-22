@@ -1,0 +1,16 @@
+:host {
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+
+#canvas {
+  border: 1px solid;
+}
+
+.side-control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  list-style: none;
+}
