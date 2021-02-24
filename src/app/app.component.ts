@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { PainterOptions } from '@shared/components/painter/painter.component';
+import { PainterOptions } from './modules/painter/painter.component';
 
 @Component({
   selector: 'app-root',

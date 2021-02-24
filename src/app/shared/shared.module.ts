@@ -1,13 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PainterComponent } from './components/painter/painter.component';
-import { ControlComponent } from './components/painter/control/control.component';
-import { ControlItemComponent } from './components/painter/control-item/control-item.component';
-import { MainControlComponent } from './components/painter/main-control/main-control.component';
+
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
-  declarations: [PainterComponent, ControlComponent, ControlItemComponent, MainControlComponent],
-  imports: [CommonModule],
-  exports: [PainterComponent],
+  declarations: [],
+  imports: [CommonModule, FontAwesomeModule],
+  exports: [FontAwesomeModule],
 })
 export class SharedModule {}
