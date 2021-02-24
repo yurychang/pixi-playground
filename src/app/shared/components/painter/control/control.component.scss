@@ -1,16 +1,16 @@
-$padding: 0.5rem;
-$height: 3rem;
+$padding: 5px;
+$height: $padding * 2 + 24px;
 
-:host {
+:host ::ng-deep {
   display: inline-flex;
   align-items: center;
   padding: $padding;
   height: $height;
   width: auto;
   border-radius: $height / 2;
-  background-color: black;
+  border: 1px solid #eee;
 
-  > control-item + control-item {
+  > app-control-item + app-control-item {
     margin-left: 0.5rem;
   }
 
@@ -18,7 +18,7 @@ $height: 3rem;
     height: auto;
     width: $height;
 
-    > control-item + control-item {
+    > app-control-item + app-control-item {
       margin-left: 0;
       margin-top: 0.5rem;
     }
