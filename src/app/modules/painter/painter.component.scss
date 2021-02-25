@@ -1,16 +1,15 @@
-:host {
+#canvas {
+  border: 1px solid;
+}
+
+.painter {
   position: relative;
   display: inline-block;
   width: auto;
 }
 
-#canvas {
-  border: 1px solid;
-}
-
-.main-control {
+#main-control {
   position: absolute;
-  top: 0;
-  left: 0;
-  list-style: none;
+  top: 15px;
+  left: 15px;
 }

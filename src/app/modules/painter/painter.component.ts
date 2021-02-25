@@ -48,23 +48,6 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     this.initPixiApplication();
   }
 
-  drawSquare() {
-    let begin: { x: number; y: number };
-    this.canvasApp!.stage.interactive = true;
-    this.canvasApp!.stage.width = this.canvasApp!.renderer.width;
-    this.canvasApp!.stage.height = this.canvasApp!.renderer.height;
-    this.canvasApp!.stage.on('mousedown', (e: any) => {
-      console.log(e);
-    });
-
-    const graphic = new Graphics();
-    graphic.beginFill(0x000000);
-    graphic.drawRect(50, 50, 50, 50);
-    graphic.endFill();
-
-    this.canvasApp?.stage.addChild(graphic);
-  }
-
   private initPixiApplication(): void {
     this.canvasApp = new Application({
       view: this.canvasEl?.nativeElement,

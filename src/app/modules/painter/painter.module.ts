@@ -3,14 +3,12 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '@shared/shared.module';
 
 import { PainterComponent } from './painter.component';
-import { PainterControlComponent } from './painter-control/painter-control.component';
-import { PainterControlItemComponent } from './painter-control-item/painter-control-item.component';
-import { PainterMainControlComponent } from './painter-main-control/painter-main-control.component';
-import { PainterPaletteComponent } from './painter-palette/painter-palette.component';
+import { PainterToolBarComponent } from './painter-tool-bar/painter-tool-bar.component';
+import { PainterToolComponent } from './painter-tool/painter-tool.component';
 
 @NgModule({
-  declarations: [PainterComponent, PainterControlComponent, PainterControlItemComponent, PainterMainControlComponent, PainterPaletteComponent],
+  declarations: [PainterComponent, PainterToolBarComponent, PainterToolComponent],
   imports: [CommonModule, SharedModule],
-  exports: [PainterComponent, PainterControlComponent, PainterControlItemComponent, PainterPaletteComponent],
+  exports: [PainterComponent, PainterToolBarComponent, PainterToolComponent],
 })
 export class PainterModule {}
