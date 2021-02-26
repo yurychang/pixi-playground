@@ -1,9 +1,10 @@
 <div class="painter">
   <div id="main-control">
     <app-painter-tool-bar>
-      <app-painter-tool bgColor="#eee">
-
+      <app-painter-tool color="#9a9a9a">
+        <fa-icon [icon]="icons.faPen"></fa-icon>
       </app-painter-tool>
+      <app-painter-tool bgColor="#eee" (click)="clearAll()"> X </app-painter-tool>
     </app-painter-tool-bar>
   </div>
   <canvas #canvas id="canvas"></canvas>

@@ -13,4 +13,8 @@ export class PainterToolComponent {
   @Input()
   @HostBinding('style.background-color')
   bgColor?: string;
+
+  @Input()
+  @HostBinding('style.color')
+  color?: string;
 }
