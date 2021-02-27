@@ -8,11 +8,23 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
+  NgZone,
 } from '@angular/core';
-import { Application, Container, Graphics, LineStyle, InteractionEvent, Sprite } from 'pixi.js';
+import {
+  Application,
+  Container,
+  Graphics,
+  LineStyle,
+  InteractionEvent,
+  Sprite,
+  LINE_CAP,
+  LINE_JOIN,
+  BLEND_MODES,
+} from 'pixi.js';
 import { isNumber } from 'src/app/core/utils/assert/type-assert';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
-import { Observable, Subject } from 'rxjs';
+import { faPen, faEraser } from '@fortawesome/free-solid-svg-icons';
+import { Subject } from 'rxjs';
+import { map, pairwise, switchMap, takeUntil, startWith, tap, take } from 'rxjs/operators';
 
 export interface PainterOptions {
   width?: number;
@@ -21,7 +33,15 @@ export interface PainterOptions {
 
 enum DrawMode {
   Pen,
-  circle,
+  Eraser,
+}
+
+interface StyleConfig {
+  lineWidth?: number;
+  texture?: number;
+  fillStyle?: number;
+  strokeStyle?: number;
+  alpha?: number;
 }
 
 @Component({
@@ -34,29 +54,56 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   @Input() options: PainterOptions = {};
 
   canvasApp?: Application;
-  bgSprite?: Sprite;
+  backgroundSprite = new Sprite();
+  mainLayer = new Container();
 
   drawMode: DrawMode = DrawMode.Pen;
   drawingLayer?: Container;
-  drawingGraphic?: Graphics;
+  drawingGraphics?: Graphics;
 
-  drawOptions = {
-    lineWidth: 4,
+  drawOptions: StyleConfig = {
+    lineWidth: 20,
     fillStyle: 0x000000,
     strokeStyle: 0x000000,
+    alpha: 1,
   };
 
-  isDrawing = false;
-  drawingStart = new Subject<InteractionEvent>();
-  drawing = new Subject<InteractionEvent>();
+  eraserConfig: StyleConfig = {
+    fillStyle: 0xffffff,
+    strokeStyle: 0xffffff,
+  };
 
+  // Observable Event
+  private pointerDown$ = new Subject<InteractionEvent>();
+  private pointerMove$ = new Subject<InteractionEvent>();
+  private pointerUp$ = new Subject<InteractionEvent>();
+  drawingStart$ = this.pointerDown$.asObservable();
+  drawing$ = this.pointerDown$.asObservable().pipe(
+    switchMap(e =>
+      this.pointerMove$.asObservable().pipe(
+        startWith(e),
+        map(e => ({ x: e.data.global.x, y: e.data.global.y })),
+        pairwise(),
+        takeUntil(
+          this.pointerUp$.asObservable().pipe(
+            tap(() => {
+              this.initGraphics();
+            })
+          )
+        )
+      )
+    )
+  );
+
+  DrawMode = DrawMode;
   icons = {
     faPen,
+    faEraser,
   };
 
   @ViewChild('canvas') canvasEl?: ElementRef<HTMLCanvasElement>;
 
-  constructor() {}
+  constructor(private zone: NgZone) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!(changes.options && this.canvasApp)) return;
@@ -73,62 +120,78 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   ngAfterViewInit(): void {
     this.initPixiApplication();
 
-    this.drawingStart.subscribe(e => {
-      this.drawingLayer = new Container();
-      this.drawingGraphic = new Graphics();
-      this.drawingGraphic.lineStyle(this.drawOptions.lineWidth, this.drawOptions.fillStyle);
-      this.drawingGraphic.position.set(0, 0);
-      this.drawingGraphic.moveTo(e.data.global.x, e.data.global.y);
-      this.drawingLayer.addChild(this.drawingGraphic);
-      this.canvasApp?.stage.addChild(this.drawingLayer);
+    this.drawingStart$.subscribe(() => {
+      switch (this.drawMode) {
+        case DrawMode.Pen:
+          this.drawOptions.fillStyle = 0x000000;
+          this.initGraphics();
+          this.drawingGraphics!.blendMode = BLEND_MODES.NORMAL;
+          break;
+
+        case DrawMode.Eraser:
+          this.drawOptions.fillStyle = 0xffffff;
+          this.initGraphics();
+          this.drawingGraphics!.blendMode = BLEND_MODES.XOR;
+          break;
+      }
     });
 
-    this.drawing.subscribe(e => {
-      if (this.drawMode === DrawMode.Pen) {
-        this.drawLine(e);
-      }
+    this.drawing$.subscribe(e => {
+      this.draw(e);
     });
   }
 
-  drawLine(e: InteractionEvent): void {
-    this.drawingGraphic?.lineTo(e.data.global.x, e.data.global.y);
+  draw(e: any): void {
+    this.drawingGraphics?.moveTo(e[0].x, e[0].y)?.lineTo(e[1].x, e[1].y);
   }
 
   clearAll() {
-    this.canvasApp?.stage.removeChildren();
-    this.canvasApp?.stage.addChild(this.bgSprite as Sprite);
+    this.mainLayer?.removeChildren();
+  }
+
+  private initGraphics(config?: StyleConfig) {
+    this.drawingLayer = new Container();
+    this.drawingGraphics = new Graphics();
+    this.drawingGraphics.beginTextureFill;
+    this.drawingGraphics.lineTextureStyle({
+      width: this.drawOptions.lineWidth,
+      color: this.drawOptions.fillStyle,
+      cap: LINE_CAP.ROUND,
+      join: LINE_JOIN.ROUND,
+    });
+    this.drawingLayer.addChild(this.drawingGraphics);
+    this.mainLayer.addChild(this.drawingLayer);
   }
 
   private initPixiApplication(): void {
-    this.canvasApp = new Application({
-      view: this.canvasEl?.nativeElement,
-      backgroundColor: 0xffffff,
-      ...this.options,
-    });
+    this.zone.runOutsideAngular(() => {
+      this.canvasApp = new Application({
+        view: this.canvasEl?.nativeElement,
+        transparent: true,
+        ...this.options,
+      });
 
-    this.canvasApp.stage.interactive = true;
-    const bgSprite = new Sprite();
-    bgSprite.width = this.canvasApp.renderer.width;
-    bgSprite.height = this.canvasApp.renderer.height;
-    this.canvasApp.stage.addChild(bgSprite);
-    this.bgSprite = bgSprite;
+      this.canvasApp.stage.interactive = true;
+      this.backgroundSprite.width = this.canvasApp.renderer.width;
+      this.backgroundSprite.height = this.canvasApp.renderer.height;
+      this.canvasApp.stage.addChild(this.backgroundSprite);
+      this.canvasApp.stage.addChild(this.mainLayer);
 
-    this.canvasApp.stage.on('pointerdown', (e: InteractionEvent) => {
-      this.isDrawing = true;
-      this.drawingStart.next(e);
-    });
+      this.canvasApp.stage.on('pointerdown', (e: InteractionEvent) => {
+        this.pointerDown$.next(e);
+      });
 
-    this.canvasApp.stage.on('pointermove', (e: InteractionEvent) => {
-      if (this.isDrawing) {
-        this.drawing.next(e);
-      }
-    });
+      this.canvasApp.stage.on('pointermove', (e: InteractionEvent) => {
+        this.pointerMove$.next(e);
+      });
 
-    this.canvasApp.stage.on('pointerup', (e: InteractionEvent) => {
-      this.isDrawing = false;
-    });
-    this.canvasApp.stage.on('pointerleave', (e: InteractionEvent) => {
-      this.isDrawing = false;
+      this.canvasApp.stage.on('pointerup', (e: InteractionEvent) => {
+        this.pointerUp$.next();
+      });
+
+      this.canvasApp.stage.on('mouseout', (e: InteractionEvent) => {
+        this.pointerUp$.next();
+      });
     });
   }
 }

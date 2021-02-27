@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, Input, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'app-painter-tool-bar',
@@ -10,8 +10,24 @@ import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@
   },
   encapsulation: ViewEncapsulation.None,
 })
-export class PainterToolBarComponent implements OnInit {
-  constructor() {}
+export class PainterToolBarComponent {
+  @Input()
+  @HostBinding('class.vertical')
+  vertical = false;
 
-  ngOnInit(): void {}
+  @HostBinding('class.top') get top(): boolean {
+    return this.align === 'top';
+  }
+  @HostBinding('class.right') get right(): boolean {
+    return this.align === 'right';
+  }
+  @HostBinding('class.bottom') get bottom(): boolean {
+    return this.align === 'bottom';
+  }
+  @HostBinding('class.left') get left(): boolean {
+    return this.align === 'left';
+  }
+
+  @Input()
+  align?: string;
 }

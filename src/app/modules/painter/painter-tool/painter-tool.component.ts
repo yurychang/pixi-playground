@@ -17,4 +17,8 @@ export class PainterToolComponent {
   @Input()
   @HostBinding('style.color')
   color?: string;
+
+  @Input()
+  @HostBinding('class.active')
+  active = false;
 }
