@@ -21,4 +21,8 @@ export class PainterToolComponent {
   @Input()
   @HostBinding('class.active')
   active = false;
+
+  @Input()
+  @HostBinding('style.font-size')
+  fontSize?: string;
 }

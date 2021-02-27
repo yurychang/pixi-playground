@@ -20,6 +20,8 @@ import {
   LINE_CAP,
   LINE_JOIN,
   BLEND_MODES,
+  Texture,
+  Matrix,
 } from 'pixi.js';
 import { isNumber } from 'src/app/core/utils/assert/type-assert';
 import { faPen, faEraser } from '@fortawesome/free-solid-svg-icons';
@@ -36,12 +38,19 @@ enum DrawMode {
   Eraser,
 }
 
-interface StyleConfig {
-  lineWidth?: number;
-  texture?: number;
-  fillStyle?: number;
-  strokeStyle?: number;
+interface FillStyle {
+  color?: number;
   alpha?: number;
+  texture?: Texture;
+}
+
+interface StrokeStyle {
+  width?: number;
+  color?: number;
+  alpha?: number;
+  cap?: LINE_CAP;
+  join?: LINE_JOIN;
+  texture?: Texture;
 }
 
 @Component({
@@ -58,22 +67,25 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   mainLayer = new Container();
 
   drawMode: DrawMode = DrawMode.Pen;
-  drawingLayer?: Container;
   drawingGraphics?: Graphics;
 
-  drawOptions: StyleConfig = {
-    lineWidth: 20,
-    fillStyle: 0x000000,
-    strokeStyle: 0x000000,
+  fillStyle: FillStyle = {
+    color: 0x000000,
     alpha: 1,
   };
 
-  eraserConfig: StyleConfig = {
-    fillStyle: 0xffffff,
-    strokeStyle: 0xffffff,
+  strokeStyle: StrokeStyle = {
+    width: 1,
+    color: 0x000000,
+    alpha: 1,
+    cap: LINE_CAP.ROUND,
+    join: LINE_JOIN.ROUND,
   };
 
-  // Observable Event
+  eraserStyle: StrokeStyle = {
+    color: 0xffffff,
+  };
+
   private pointerDown$ = new Subject<InteractionEvent>();
   private pointerMove$ = new Subject<InteractionEvent>();
   private pointerUp$ = new Subject<InteractionEvent>();
@@ -82,6 +94,7 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     switchMap(e =>
       this.pointerMove$.asObservable().pipe(
         startWith(e),
+        // tslint:disable-next-line: no-shadowed-variable
         map(e => ({ x: e.data.global.x, y: e.data.global.y })),
         pairwise(),
         takeUntil(
@@ -119,21 +132,19 @@ export class PainterComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initPixiApplication();
+    this.initGraphics();
 
     this.drawingStart$.subscribe(() => {
-      switch (this.drawMode) {
-        case DrawMode.Pen:
-          this.drawOptions.fillStyle = 0x000000;
-          this.initGraphics();
-          this.drawingGraphics!.blendMode = BLEND_MODES.NORMAL;
-          break;
+      this.initGraphics();
 
+      switch (this.drawMode) {
         case DrawMode.Eraser:
-          this.drawOptions.fillStyle = 0xffffff;
-          this.initGraphics();
           this.drawingGraphics!.blendMode = BLEND_MODES.XOR;
+          this.drawingGraphics?.lineTextureStyle({ ...this.strokeStyle, ...this.eraserStyle });
           break;
       }
+
+      console.log(this.strokeStyle.width);
     });
 
     this.drawing$.subscribe(e => {
@@ -145,22 +156,15 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     this.drawingGraphics?.moveTo(e[0].x, e[0].y)?.lineTo(e[1].x, e[1].y);
   }
 
-  clearAll() {
+  clearAll(): void {
     this.mainLayer?.removeChildren();
   }
 
-  private initGraphics(config?: StyleConfig) {
-    this.drawingLayer = new Container();
+  private initGraphics(): void {
     this.drawingGraphics = new Graphics();
-    this.drawingGraphics.beginTextureFill;
-    this.drawingGraphics.lineTextureStyle({
-      width: this.drawOptions.lineWidth,
-      color: this.drawOptions.fillStyle,
-      cap: LINE_CAP.ROUND,
-      join: LINE_JOIN.ROUND,
-    });
-    this.drawingLayer.addChild(this.drawingGraphics);
-    this.mainLayer.addChild(this.drawingLayer);
+    this.drawingGraphics.lineTextureStyle(this.strokeStyle);
+    this.drawingGraphics.beginTextureFill(this.fillStyle);
+    this.mainLayer.addChild(this.drawingGraphics);
   }
 
   private initPixiApplication(): void {

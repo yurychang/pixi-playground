@@ -1,8 +1,9 @@
 $tool-bar-padding-y: 8px;
-$tool-bar-padding-x: 8px;
+$tool-bar-padding-x: 5px;
 $tool-bar-gutter: 10px;
 $tool-size: 32px;
 $tool-font-size: 20px;
+$border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y} - 2px);
 
 .painter-tool-bar {
   position: absolute;
@@ -12,21 +13,24 @@ $tool-font-size: 20px;
   display: flex;
   align-items: center;
   font-size: $tool-font-size;
-  border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y}) / 50%;
+  border-radius: $border-radius / 50%;
   background-color: #fff;
   box-shadow: 0 2px 5px 0 #b9b9b9;
 
-  > * + * {
-    margin-left: $tool-bar-gutter;
+  > * {
+    margin-left: $tool-bar-gutter / 2;
+    margin-right: $tool-bar-gutter / 2;
   }
 
   &.vertical {
     flex-direction: column;
     padding: $tool-bar-padding-x $tool-bar-padding-y;
-    border-radius: 50% / calc(#{$tool-size / 2} + #{$tool-bar-padding-y});
+    border-radius: 50% / $border-radius;
 
-    > * + * {
-      margin-top: $tool-bar-gutter;
+    > * {
+      margin-top: $tool-bar-gutter / 2;
+      margin-bottom: $tool-bar-gutter / 2;
+      margin-right: 0;
       margin-left: 0;
     }
   }
@@ -64,10 +68,20 @@ $tool-font-size: 20px;
   cursor: pointer;
 
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
   }
 
   &.active {
     color: #4d4d4d;
+  }
+
+  input {
+    width: 100%;
+    text-align: center;
+    border: none;
+
+    &:focus {
+      outline: none;
+    }
   }
 }
