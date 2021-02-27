@@ -1,0 +1,19 @@
+:host {
+  overflow: hidden;
+}
+
+#canvas {
+  border: 1px solid;
+}
+
+.painter {
+  position: relative;
+  display: inline-block;
+  width: auto;
+}
+
+#main-control {
+  position: absolute;
+  top: 24px;
+  left: 0;
+}

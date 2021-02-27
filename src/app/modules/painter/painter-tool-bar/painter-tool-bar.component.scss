@@ -1,0 +1,87 @@
+$tool-bar-padding-y: 8px;
+$tool-bar-padding-x: 5px;
+$tool-bar-gutter: 10px;
+$tool-size: 32px;
+$tool-font-size: 20px;
+$border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y} - 2px);
+
+.painter-tool-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: $tool-bar-padding-y $tool-bar-padding-x;
+  display: flex;
+  align-items: center;
+  font-size: $tool-font-size;
+  border-radius: $border-radius / 50%;
+  background-color: #fff;
+  box-shadow: 0 2px 5px 0 #b9b9b9;
+
+  > * {
+    margin-left: $tool-bar-gutter / 2;
+    margin-right: $tool-bar-gutter / 2;
+  }
+
+  &.vertical {
+    flex-direction: column;
+    padding: $tool-bar-padding-x $tool-bar-padding-y;
+    border-radius: 50% / $border-radius;
+
+    > * {
+      margin-top: $tool-bar-gutter / 2;
+      margin-bottom: $tool-bar-gutter / 2;
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+
+  &.left {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  &.top {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  &.right {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  &.bottom {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+.painter-tool {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: $tool-size;
+  height: $tool-size;
+  line-height: $tool-size / $tool-font-size;
+  color: #9a9a9a;
+  border-radius: 50%;
+  transform-origin: center;
+  transition: 0.15s ease-in-out;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.active {
+    color: #4d4d4d;
+  }
+
+  input {
+    width: 100%;
+    text-align: center;
+    border: none;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
