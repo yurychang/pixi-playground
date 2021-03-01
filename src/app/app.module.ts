@@ -7,10 +7,11 @@ import { SharedModule } from './shared/shared.module';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { PainterModule } from './modules/painter/painter.module';
+import { PaletteModule } from './modules/palette/palette.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, SharedModule, FontAwesomeModule, PainterModule],
+  imports: [BrowserModule, AppRoutingModule, SharedModule, FontAwesomeModule, PainterModule, PaletteModule],
   providers: [],
   bootstrap: [AppComponent],
 })
