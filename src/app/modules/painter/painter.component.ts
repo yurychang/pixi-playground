@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   ChangeDetectionStrategy,
   ViewChild,
   ElementRef,
@@ -19,38 +18,35 @@ import {
   Sprite,
   LINE_CAP,
   LINE_JOIN,
-  BLEND_MODES,
-  Texture,
-  Matrix,
+  FillStyle,
 } from 'pixi.js';
 import { isNumber } from 'src/app/core/utils/assert/type-assert';
 import { faPen, faEraser } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { map, pairwise, switchMap, takeUntil, startWith, tap, take } from 'rxjs/operators';
+import { createEraser, createPen } from './draw-function/pen';
 
 export interface PainterOptions {
   width?: number;
   height?: number;
 }
 
-enum DrawMode {
+export type PainterFillStyle = Partial<FillStyle>;
+export type PainterLineStyle = Partial<LineStyle>;
+export type Position = { x: number; y: number };
+
+export type DrawFuncFactory = (
+  g: Graphics,
+  styles: { fill: PainterFillStyle; line: PainterLineStyle }
+) => {
+  setUp?: () => void;
+  draw?: (from: Position, to: Position) => void;
+  complete?: (e: InteractionEvent) => void;
+};
+
+enum DrawType {
   Pen,
   Eraser,
-}
-
-interface FillStyle {
-  color?: number;
-  alpha?: number;
-  texture?: Texture;
-}
-
-interface StrokeStyle {
-  width?: number;
-  color?: number;
-  alpha?: number;
-  cap?: LINE_CAP;
-  join?: LINE_JOIN;
-  texture?: Texture;
 }
 
 @Component({
@@ -66,15 +62,15 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   backgroundSprite = new Sprite();
   mainLayer = new Container();
 
-  drawMode: DrawMode = DrawMode.Pen;
+  drawType: DrawType = DrawType.Pen;
   drawingGraphics?: Graphics;
 
-  fillStyle: FillStyle = {
+  fillStyle: PainterFillStyle = {
     color: 0x000000,
     alpha: 1,
   };
 
-  strokeStyle: StrokeStyle = {
+  lineStyle: PainterLineStyle = {
     width: 1,
     color: 0x000000,
     alpha: 1,
@@ -82,7 +78,7 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     join: LINE_JOIN.ROUND,
   };
 
-  eraserStyle: StrokeStyle = {
+  eraserStyle: PainterLineStyle = {
     color: 0xffffff,
   };
 
@@ -90,31 +86,43 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   private pointerMove$ = new Subject<InteractionEvent>();
   private pointerUp$ = new Subject<InteractionEvent>();
   drawingStart$ = this.pointerDown$.asObservable();
+  drawingEnd$ = new Subject<InteractionEvent>();
   drawing$ = this.pointerDown$.asObservable().pipe(
     switchMap(e =>
       this.pointerMove$.asObservable().pipe(
         startWith(e),
-        // tslint:disable-next-line: no-shadowed-variable
-        map(e => ({ x: e.data.global.x, y: e.data.global.y })),
-        pairwise(),
         takeUntil(
           this.pointerUp$.asObservable().pipe(
-            tap(() => {
+            tap(e => {
               this.initGraphics();
+              this.drawingEnd$.next(e);
             })
           )
-        )
+        ),
+        map(e => ({ x: e.data.global.x, y: e.data.global.y })),
+        pairwise()
       )
     )
   );
 
-  DrawMode = DrawMode;
+  DrawType = DrawType;
   icons = {
     faPen,
     faEraser,
   };
 
   @ViewChild('canvas') canvasEl?: ElementRef<HTMLCanvasElement>;
+
+  private drawFactorys = [
+    {
+      type: DrawType.Pen,
+      factory: createPen,
+    },
+    {
+      type: DrawType.Eraser,
+      factory: createEraser,
+    },
+  ];
 
   constructor(private zone: NgZone) {}
 
@@ -132,23 +140,34 @@ export class PainterComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initPixiApplication();
-    this.initGraphics();
+
+    let drawFactory;
+    let startFunc: (() => void) | undefined;
+    let drawFunc: Function | undefined;
+    let completeFunc: ((e: InteractionEvent) => void) | undefined;
 
     this.drawingStart$.subscribe(() => {
       this.initGraphics();
 
-      switch (this.drawMode) {
-        case DrawMode.Eraser:
-          this.drawingGraphics!.blendMode = BLEND_MODES.XOR;
-          this.drawingGraphics?.lineTextureStyle({ ...this.strokeStyle, ...this.eraserStyle });
-          break;
+      drawFactory = this.drawFactorys.find(({ type }) => type === this.drawType)?.factory;
+      if (drawFactory) {
+        const { setUp, draw, complete } = drawFactory?.(this.drawingGraphics as Graphics, {
+          fill: this.fillStyle,
+          line: this.lineStyle,
+        });
+        startFunc = setUp;
+        drawFunc = draw;
+        completeFunc = complete;
       }
-
-      console.log(this.strokeStyle.width);
+      startFunc?.();
     });
 
     this.drawing$.subscribe(e => {
-      this.draw(e);
+      drawFunc?.(...e);
+    });
+
+    this.drawingEnd$.subscribe(e => {
+      completeFunc?.(e);
     });
   }
 
@@ -162,7 +181,7 @@ export class PainterComponent implements OnChanges, AfterViewInit {
 
   private initGraphics(): void {
     this.drawingGraphics = new Graphics();
-    this.drawingGraphics.lineTextureStyle(this.strokeStyle);
+    this.drawingGraphics.lineTextureStyle(this.lineStyle);
     this.drawingGraphics.beginTextureFill(this.fillStyle);
     this.mainLayer.addChild(this.drawingGraphics);
   }

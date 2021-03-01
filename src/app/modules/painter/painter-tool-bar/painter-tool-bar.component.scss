@@ -3,7 +3,6 @@ $tool-bar-padding-x: 5px;
 $tool-bar-gutter: 10px;
 $tool-size: 32px;
 $tool-font-size: 20px;
-$border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y} - 2px);
 
 .painter-tool-bar {
   position: absolute;
@@ -13,7 +12,7 @@ $border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y} - 2px);
   display: flex;
   align-items: center;
   font-size: $tool-font-size;
-  border-radius: $border-radius / 50%;
+  border-radius: 15px;
   background-color: #fff;
   box-shadow: 0 2px 5px 0 #b9b9b9;
 
@@ -25,7 +24,6 @@ $border-radius: calc(#{$tool-size / 2} + #{$tool-bar-padding-y} - 2px);
   &.vertical {
     flex-direction: column;
     padding: $tool-bar-padding-x $tool-bar-padding-y;
-    border-radius: 50% / $border-radius;
 
     > * {
       margin-top: $tool-bar-gutter / 2;
