@@ -3,7 +3,7 @@ import { Rgb } from '@entities/color-type';
 import { createGradientColorMap } from '@utils/color-transform/create-gradient-color-map';
 import { hexToRgb } from '@utils/color-transform/hex-to-rgb';
 import { rgbToHex } from '@utils/color-transform/rgb-to-hex';
-import { Application, Graphics, Sprite } from 'pixi.js';
+import { Application, BLEND_MODES, Graphics, Sprite } from 'pixi.js';
 
 @Component({
   selector: 'app-palette',
@@ -25,7 +25,6 @@ export class PaletteComponent implements OnInit {
 
       const max = Math.max(this.rgbColor[0], this.rgbColor[1], this.rgbColor[2]);
       const rate = 255 / max;
-      this.colorRate = rate;
       this.mainColor = this.rgbColor.map(color => (color === max ? color : color * rate)) as Rgb;
     }
   }
@@ -38,8 +37,7 @@ export class PaletteComponent implements OnInit {
   @ViewChild('colorPicker') colorPickerRef?: ElementRef<HTMLCanvasElement>;
 
   private rgbColor: Rgb = [255, 255, 255];
-  private mainColor: Rgb = [255, 255, 0];
-  private colorRate = 0;
+  private mainColor: Rgb = [0, 0, 255];
 
   constructor() {}
 
@@ -63,16 +61,17 @@ export class PaletteComponent implements OnInit {
 
     const pickerBg = new Graphics();
 
-    const blockWidth = width / 256;
-    const blockHeight = height / 256;
+    const step = 256;
+    const blockWidth = width / step;
+    const blockHeight = height / step;
     let blockY = 0;
 
-    const startGradient = createGradientColorMap([255, 255, 255], [0, 0, 0]);
-    const endGradient = createGradientColorMap(this.mainColor, [0, 0, 0]);
+    const startGradient = createGradientColorMap([255, 255, 255], [0, 0, 0], step);
+    const endGradient = createGradientColorMap(this.mainColor, [0, 0, 0], step);
 
     startGradient.forEach((startColor, i) => {
       let blockX = 0;
-      createGradientColorMap(startColor, endGradient[i]).forEach((color, j) => {
+      createGradientColorMap(startColor, endGradient[i], step).forEach((color, j) => {
         const hex = rgbToHex(color[0], color[1], color[2], true) as number;
         pickerBg.beginFill(hex);
         pickerBg.drawRect(blockX, blockY, blockWidth, blockHeight);
