@@ -10,16 +10,24 @@
         </button>
       </div>
       <div>
-        <div #mainColorInterval class="palette-color-slider">
-          <!-- <canvas #mainColorSlider></canvas> -->
+        <div class="palette-color-slider">
+          <div class="palette-color-slider-tracker">
+            <canvas #mainColorTracker></canvas>
+          </div>
+          <div
+            #mainColorSliderThumb
+            (mousedown)="mainColorPickerDown$.next($event)"
+            [style.left]="mainColorThumbX + '%'"
+            class="palette-color-slider-thumb"
+          ></div>
         </div>
-        <div #opacitySlider class="palette-color-slider">
-          <!-- <canvas #alphaSlider></canvas> -->
+        <div class="palette-color-slider">
+          <!-- <canvas #opacitySlider></canvas> -->
         </div>
       </div>
     </div>
     <div class="palette-color-label">
-      <input type="text" class="palette-hex-control" />
+      <input type="color" class="palette-hex-control" value="#e66465" />
     </div>
   </div>
 </div>
