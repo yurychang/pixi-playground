@@ -1,9 +1,16 @@
 <div class="painter">
   <div id="main-control">
     <app-painter-tool-bar [vertical]="true" align="left">
-      <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">
-        <label class="palette-tool" [ngStyle]="{ backgroundColor: color }">
-          <input type="color" class="palette-input" [(ngModel)]="color" />
+      <app-painter-tool>
+        <label class="palette-tool" [ngStyle]="{ backgroundColor: fillColor }">
+          F
+          <input type="color" [(ngModel)]="fillColor" />
+        </label>
+      </app-painter-tool>
+      <app-painter-tool>
+        <label class="palette-tool" [ngStyle]="{ backgroundColor: lineColor }">
+          L
+          <input type="color" [(ngModel)]="lineColor" />
         </label>
       </app-painter-tool>
       <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">

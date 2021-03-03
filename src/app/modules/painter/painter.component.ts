@@ -68,16 +68,25 @@ export class PainterComponent implements OnChanges, AfterViewInit {
   drawType: DrawType = DrawType.Pen;
   drawingGraphics?: Graphics;
 
-  get color(): string {
-    return this._color;
+  get fillColor(): string {
+    return this._fillColor;
   }
-  set color(v: string) {
-    this._color = v;
+  set fillColor(v: string) {
+    this._fillColor = v;
     const [r, g, b] = hexToRgb(v) as Rgb;
     this.fillStyle.color = rgbToHex(r, g, b, true) as number;
+  }
+  private _fillColor = '#ffffff';
+
+  get lineColor(): string {
+    return this._lineColor;
+  }
+  set lineColor(v: string) {
+    this._lineColor = v;
+    const [r, g, b] = hexToRgb(v) as Rgb;
     this.lineStyle.color = rgbToHex(r, g, b, true) as number;
   }
-  private _color = '#000000';
+  private _lineColor = '#000000';
 
   fillStyle: PainterFillStyle = {
     color: 0x000000,
@@ -90,10 +99,6 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     alpha: 1,
     cap: LINE_CAP.ROUND,
     join: LINE_JOIN.ROUND,
-  };
-
-  eraserStyle: PainterLineStyle = {
-    color: 0xffffff,
   };
 
   private pointerDown$ = new Subject<InteractionEvent>();
