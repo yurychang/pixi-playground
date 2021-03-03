@@ -25,6 +25,9 @@ import { faPen, faEraser } from '@fortawesome/free-solid-svg-icons';
 import { Subject } from 'rxjs';
 import { map, pairwise, switchMap, takeUntil, startWith, tap, take } from 'rxjs/operators';
 import { createEraser, createPen } from './draw-function/pen';
+import { hexToRgb } from '@utils/color-transform/hex-to-rgb';
+import { rgbToHex } from '@utils/color-transform/rgb-to-hex';
+import { Rgb } from '@entities/color-type';
 
 export interface PainterOptions {
   width?: number;
@@ -64,6 +67,17 @@ export class PainterComponent implements OnChanges, AfterViewInit {
 
   drawType: DrawType = DrawType.Pen;
   drawingGraphics?: Graphics;
+
+  get color(): string {
+    return this._color;
+  }
+  set color(v: string) {
+    this._color = v;
+    const [r, g, b] = hexToRgb(v) as Rgb;
+    this.fillStyle.color = rgbToHex(r, g, b, true) as number;
+    this.lineStyle.color = rgbToHex(r, g, b, true) as number;
+  }
+  private _color = '#000000';
 
   fillStyle: PainterFillStyle = {
     color: 0x000000,

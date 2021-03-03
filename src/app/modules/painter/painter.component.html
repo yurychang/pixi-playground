@@ -2,13 +2,18 @@
   <div id="main-control">
     <app-painter-tool-bar [vertical]="true" align="left">
       <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">
+        <label class="palette-tool" [ngStyle]="{ backgroundColor: color }">
+          <input type="color" class="palette-input" [(ngModel)]="color" />
+        </label>
+      </app-painter-tool>
+      <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">
         <fa-icon [icon]="icons.faPen"></fa-icon>
       </app-painter-tool>
       <app-painter-tool [active]="drawType === DrawType.Eraser" (click)="drawType = DrawType.Eraser">
         <fa-icon [icon]="icons.faEraser"></fa-icon>
       </app-painter-tool>
       <app-painter-tool fontSize="16px">
-        <input type="number" min="1" max="999" [(ngModel)]="lineStyle.width">
+        <input type="number" min="1" max="999" [(ngModel)]="lineStyle.width" />
       </app-painter-tool>
       <app-painter-tool bgColor="#eee" (click)="clearAll()">c</app-painter-tool>
     </app-painter-tool-bar>

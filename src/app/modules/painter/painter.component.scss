@@ -17,3 +17,16 @@
   top: 24px;
   left: 0;
 }
+
+.palette-tool {
+  width: 75%;
+  height: 75%;
+  border: none;
+  border-radius: 50%;
+  background-color: #e91919;
+  cursor: pointer;
+
+  input {
+    visibility: hidden;
+  }
+}
