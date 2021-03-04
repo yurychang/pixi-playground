@@ -1,4 +1,4 @@
-import { DrawFuncFactory } from '../painter.component';
+import { DrawFuncFactory } from '../painter-canvas/painter-canvas.component';
 
 export const createRect: DrawFuncFactory = (graphics, styles) => {
   const origin: { x: number; y: number } = { x: 0, y: 0 };

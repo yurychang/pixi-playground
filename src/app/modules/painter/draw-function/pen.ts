@@ -1,5 +1,5 @@
 import { BLEND_MODES } from 'pixi.js';
-import { DrawFuncFactory } from '../painter.component';
+import { DrawFuncFactory } from '../painter-canvas/painter-canvas.component';
 
 export const createPen: DrawFuncFactory = graphics => {
   return {

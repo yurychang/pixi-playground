@@ -2,7 +2,7 @@
   overflow: hidden;
 }
 
-#canvas {
+.painter-canvas {
   border: 1px solid;
 }
 
@@ -19,6 +19,7 @@
 }
 
 .palette-tool {
+  position: relative;
   width: 75%;
   height: 75%;
   border: none;
@@ -29,6 +30,9 @@
   cursor: pointer;
 
   input {
+    position: absolute;
+    top: 0;
+    left: 0;
     visibility: hidden;
   }
 }
