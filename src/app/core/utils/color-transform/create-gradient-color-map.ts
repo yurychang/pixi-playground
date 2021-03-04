@@ -5,10 +5,7 @@ export const createGradientColorMap = (start: Rgb, end: Rgb, step = 256): Rgb[] 
   const gStep = (end[1] - start[1]) / (step - 1);
   const bStep = (end[2] - start[2]) / (step - 1);
 
-  return new Array(step)
-    .fill(0)
-    .map((empty, i) => i)
-    .map(i => {
-      return [start[0] + rStep * i, start[1] + gStep * i, start[2] + bStep * i].map(num => Math.floor(num)) as Rgb;
-    });
+  return new Array(step).fill(0).map((empty, i) => {
+    return [start[0] + rStep * i, start[1] + gStep * i, start[2] + bStep * i].map(num => Math.floor(num)) as Rgb;
+  });
 };

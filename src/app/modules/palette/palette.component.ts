@@ -61,7 +61,6 @@ export class PaletteComponent implements OnInit {
 
     const [r, g, b] = color;
     if (r !== 0 && b !== 0) {
-      console.log('r -> b');
       if (r === b) {
         this.mainColorThumbX = 50 * oneSixth;
       } else if (r > b) {
@@ -70,7 +69,6 @@ export class PaletteComponent implements OnInit {
         this.mainColorThumbX = ((256 - r) / 256) * oneSixth + oneSixth;
       }
     } else if (b !== 0 && g !== 0) {
-      console.log('b -> g');
       if (b === g) {
         this.mainColorThumbX = 50 * oneSixth + oneThird;
       } else if (b > g) {
@@ -79,7 +77,6 @@ export class PaletteComponent implements OnInit {
         this.mainColorThumbX = ((256 - b) / 256) * oneSixth + oneThird + oneSixth;
       }
     } else if (r !== 0 && g !== 0) {
-      console.log('g -> r');
       if (r === g) {
         this.mainColorThumbX = 50 * oneSixth + twoThird;
       } else if (g > r) {
@@ -214,7 +211,9 @@ export class PaletteComponent implements OnInit {
     return gradientMap[colorIndex];
   }
 
-  @HostListener('mousemove', ['$event'])
+  private createMainColorGradientMap() {}
+
+  @HostListener('document:mousemove', ['$event'])
   onMouseMove(e: MouseEvent): void {
     this.mouseMove$.next(e);
   }
@@ -224,7 +223,7 @@ export class PaletteComponent implements OnInit {
     this.mouseUpOrLeave$.next(e);
   }
 
-  @HostListener('mouseleave', ['$event'])
+  @HostListener('document:mouseleave', ['$event'])
   onMouseLeave(e: MouseEvent): void {
     this.mouseUpOrLeave$.next(e);
   }
