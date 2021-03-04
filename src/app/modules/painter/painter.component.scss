@@ -2,7 +2,7 @@
   overflow: hidden;
 }
 
-#canvas {
+.painter-canvas {
   border: 1px solid;
 }
 
@@ -16,4 +16,23 @@
   position: absolute;
   top: 24px;
   left: 0;
+}
+
+.palette-tool {
+  position: relative;
+  width: 75%;
+  height: 75%;
+  border: none;
+  border-radius: 50%;
+  text-align: center;
+  color: #fff;
+  background-color: #e91919;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+  }
 }

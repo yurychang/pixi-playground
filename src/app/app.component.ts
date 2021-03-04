@@ -9,7 +9,7 @@ import { PainterOptions } from './modules/painter/painter.component';
 })
 export class AppComponent {
   painterOptions: PainterOptions = {
-    width: 400,
+    width: 600,
     height: 400,
   };
 
