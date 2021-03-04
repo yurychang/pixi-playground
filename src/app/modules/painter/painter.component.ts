@@ -28,6 +28,7 @@ import { createEraser, createPen } from './draw-function/pen';
 import { hexToRgb } from '@utils/color-transform/hex-to-rgb';
 import { rgbToHex } from '@utils/color-transform/rgb-to-hex';
 import { Rgb } from '@entities/color-type';
+import { createRect } from './draw-function/rect';
 
 export interface PainterOptions {
   width?: number;
@@ -40,9 +41,10 @@ export type Position = { x: number; y: number };
 
 export type DrawFuncFactory = (
   g: Graphics,
-  styles: { fill: PainterFillStyle; line: PainterLineStyle }
+  styles: { fill: PainterFillStyle; line: PainterLineStyle },
+  app: Application
 ) => {
-  setUp?: () => void;
+  setUp?: (e: InteractionEvent) => void;
   draw?: (from: Position, to: Position) => void;
   complete?: (e: InteractionEvent) => void;
 };
@@ -50,6 +52,7 @@ export type DrawFuncFactory = (
 enum DrawType {
   Pen,
   Eraser,
+  Rect,
 }
 
 @Component({
@@ -124,15 +127,15 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     )
   );
 
-  DrawType = DrawType;
-  icons = {
+  readonly DrawType = DrawType;
+  readonly icons = {
     faPen,
     faEraser,
   };
 
   @ViewChild('canvas') canvasEl?: ElementRef<HTMLCanvasElement>;
 
-  private drawFactorys = [
+  drawFactorys = [
     {
       type: DrawType.Pen,
       factory: createPen,
@@ -140,6 +143,10 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     {
       type: DrawType.Eraser,
       factory: createEraser,
+    },
+    {
+      type: DrawType.Rect,
+      factory: createRect,
     },
   ];
 
@@ -161,24 +168,28 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     this.initPixiApplication();
 
     let drawFactory;
-    let startFunc: (() => void) | undefined;
+    let startFunc: Function | undefined;
     let drawFunc: Function | undefined;
-    let completeFunc: ((e: InteractionEvent) => void) | undefined;
+    let completeFunc: Function | undefined;
 
-    this.drawingStart$.subscribe(() => {
+    this.drawingStart$.subscribe((e: InteractionEvent) => {
       this.initGraphics();
 
       drawFactory = this.drawFactorys.find(({ type }) => type === this.drawType)?.factory;
       if (drawFactory) {
-        const { setUp, draw, complete } = drawFactory?.(this.drawingGraphics as Graphics, {
-          fill: this.fillStyle,
-          line: this.lineStyle,
-        });
+        const { setUp, draw, complete } = drawFactory?.(
+          this.drawingGraphics as Graphics,
+          {
+            fill: this.fillStyle,
+            line: this.lineStyle,
+          },
+          this.canvasApp as Application
+        );
         startFunc = setUp;
         drawFunc = draw;
         completeFunc = complete;
       }
-      startFunc?.();
+      startFunc?.(e);
     });
 
     this.drawing$.subscribe(e => {
@@ -188,10 +199,6 @@ export class PainterComponent implements OnChanges, AfterViewInit {
     this.drawingEnd$.subscribe(e => {
       completeFunc?.(e);
     });
-  }
-
-  draw(e: any): void {
-    this.drawingGraphics?.moveTo(e[0].x, e[0].y)?.lineTo(e[1].x, e[1].y);
   }
 
   clearAll(): void {

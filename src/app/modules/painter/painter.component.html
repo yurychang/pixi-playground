@@ -16,6 +16,7 @@
       <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">
         <fa-icon [icon]="icons.faPen"></fa-icon>
       </app-painter-tool>
+      <app-painter-tool [active]="drawType === DrawType.Rect" (click)="drawType = DrawType.Rect">Rect</app-painter-tool>
       <app-painter-tool [active]="drawType === DrawType.Eraser" (click)="drawType = DrawType.Eraser">
         <fa-icon [icon]="icons.faEraser"></fa-icon>
       </app-painter-tool>
