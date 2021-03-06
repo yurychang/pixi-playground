@@ -12,8 +12,8 @@ $tool-font-size: 20px;
   display: flex;
   align-items: center;
   font-size: $tool-font-size;
-  border-radius: 15px;
   background-color: #fff;
+  border-radius: 15px;
   box-shadow: 0 2px 5px 0 #b9b9b9;
 
   > * {
@@ -54,11 +54,11 @@ $tool-font-size: 20px;
 .painter-tool {
   display: inline-flex;
   justify-content: center;
-  align-items: center;
   width: $tool-size;
   height: $tool-size;
   line-height: $tool-size / $tool-font-size;
   color: #9a9a9a;
+  align-items: center;
   border-radius: 50%;
   transform-origin: center;
   transition: 0.15s ease-in-out;

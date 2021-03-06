@@ -202,11 +202,12 @@ export class PaletteComponent implements OnInit {
       ...createGradientColorMap([0, 255, 0], [255, 255, 0], step),
       ...createGradientColorMap([255, 255, 0], [255, 0, 0], step),
     ];
+
     const gradientMap = [...redToBlueInterval, ...blueToGreenInterval, ...greenToRedInterval];
-    const gradientLength = gradientMap.length;
+
+    const gradientLength = gradientMap.length - 1;
     const percentage = position / width;
-    let colorIndex = Math.floor(gradientLength * percentage);
-    colorIndex = colorIndex === gradientLength ? colorIndex - 1 : colorIndex;
+    const colorIndex = Math.floor(gradientLength * percentage);
 
     return gradientMap[colorIndex];
   }
