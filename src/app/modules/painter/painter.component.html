@@ -1,4 +1,4 @@
-<div class="painter">
+<div class="painter" [style.width]="(options.width || 800) + 'px'" [style.height]="(options.height || 800) + 'px'">
   <div id="main-control">
     <app-painter-tool-bar [vertical]="true" align="left">
       <app-painter-tool>

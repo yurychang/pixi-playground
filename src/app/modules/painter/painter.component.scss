@@ -2,14 +2,12 @@
   overflow: hidden;
 }
 
-.painter-canvas {
-  border: 1px solid;
-}
-
 .painter {
   position: relative;
-  display: inline-block;
-  width: auto;
+}
+
+.painter-canvas {
+  border: 1px solid;
 }
 
 #main-control {

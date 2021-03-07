@@ -1,0 +1,13 @@
+.wrap {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.grid {
+  display: flex;
+
+  &-item {
+    width: 50%;
+    padding: 30px;
+  }
+}

@@ -10,6 +10,6 @@ import { PainterCanvasComponent } from './painter-canvas/painter-canvas.componen
 @NgModule({
   declarations: [PainterComponent, PainterToolBarComponent, PainterToolComponent, PainterCanvasComponent],
   imports: [CommonModule, SharedModule],
-  exports: [PainterComponent, PainterToolBarComponent, PainterToolComponent],
+  exports: [PainterComponent, PainterToolBarComponent, PainterToolComponent, PainterCanvasComponent],
 })
 export class PainterModule {}

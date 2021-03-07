@@ -1,16 +1,13 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit } from '@angular/core';
 import { faPen, faEraser } from '@fortawesome/free-solid-svg-icons';
-import { createEraser, createPen } from './draw-function/pen';
+import { createPen } from './draw-functions/pen';
 import { hexToRgb } from '@utils/color-transform/hex-to-rgb';
 import { rgbToHex } from '@utils/color-transform/rgb-to-hex';
 import { Rgb } from '@entities/color-type';
-import { createRect } from './draw-function/rect';
-import {
-  PAINTER_DRAW_FUNC_CONFIG,
-  drawFuncConfig,
-  PainterFillStyle,
-  PainterLineStyle,
-} from './painter-canvas/painter-canvas.component';
+import { createRect } from './draw-functions/rect';
+import { PainterCanvasComponent } from './painter-canvas/painter-canvas.component';
+import { createEraser } from './draw-functions/eraser';
+import { PainterFillStyle, PainterLineStyle } from './painter-types';
 
 export interface PainterOptions {
   width?: number;
@@ -23,32 +20,19 @@ enum DrawType {
   Rect,
 }
 
+const DrawFuncMap = {
+  [DrawType.Pen]: createPen,
+  [DrawType.Eraser]: createEraser,
+  [DrawType.Rect]: createRect,
+};
+
 @Component({
   selector: 'app-painter',
   templateUrl: './painter.component.html',
   styleUrls: ['./painter.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: PAINTER_DRAW_FUNC_CONFIG,
-      useValue: [
-        {
-          type: DrawType.Pen,
-          factory: createPen,
-        },
-        {
-          type: DrawType.Eraser,
-          factory: createEraser,
-        },
-        {
-          type: DrawType.Rect,
-          factory: createRect,
-        },
-      ] as drawFuncConfig,
-    },
-  ],
 })
-export class PainterComponent {
+export class PainterComponent implements AfterViewInit {
   @Input() options: PainterOptions = {};
 
   get fillColor(): string {
@@ -85,9 +69,19 @@ export class PainterComponent {
   drawType: DrawType = DrawType.Pen;
 
   readonly DrawType = DrawType;
+  readonly DrawFuncMap = DrawFuncMap;
 
   readonly icons = {
     faPen,
     faEraser,
   };
+
+  @ViewChild(PainterCanvasComponent) canvas?: PainterCanvasComponent;
+
+  ngAfterViewInit(): void {
+    this.canvas?.drawingStart$.subscribe(drawing$ => {
+      const newGraphics = DrawFuncMap[this.drawType](drawing$, { line: this.lineStyle, fill: this.fillStyle });
+      this.canvas?.addChild(newGraphics);
+    });
+  }
 }

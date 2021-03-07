@@ -1,48 +1,17 @@
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  Input,
-  NgZone,
-  OnChanges,
-  InjectionToken,
-  Inject,
-} from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit, Input, NgZone, OnChanges } from '@angular/core';
 import {
   Application,
   Container,
   Graphics,
-  LineStyle,
   InteractionEvent,
   Sprite,
   LINE_CAP,
   LINE_JOIN,
-  FillStyle,
+  DisplayObject,
 } from 'pixi.js';
 import { Subject } from 'rxjs';
-import { map, pairwise, switchMap, takeUntil, startWith, tap } from 'rxjs/operators';
-
-export type PainterFillStyle = Partial<FillStyle>;
-export type PainterLineStyle = Partial<LineStyle>;
-export type Position = { x: number; y: number };
-
-export type DrawFuncFactory = (
-  g: Graphics,
-  styles: { fill: PainterFillStyle; line: PainterLineStyle },
-  app: Application
-) => {
-  setUp?: (e: InteractionEvent) => void;
-  draw?: (from: Position, to: Position) => void;
-  complete?: (e: InteractionEvent) => void;
-};
-
-export type drawFuncConfig = {
-  type: any;
-  factory: DrawFuncFactory;
-}[];
-
-export const PAINTER_DRAW_FUNC_CONFIG = new InjectionToken<drawFuncConfig>('painter_draw_func_config');
+import { map, startWith, tap } from 'rxjs/operators';
+import { PainterFillStyle, PainterLineStyle } from '../painter-types';
 
 @Component({
   selector: 'app-painter-canvas',
@@ -76,30 +45,17 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
 
   private pointerDown$ = new Subject<InteractionEvent>();
   private pointerMove$ = new Subject<InteractionEvent>();
-  private pointerUp$ = new Subject<InteractionEvent>();
 
-  readonly drawingStart$ = this.pointerDown$.asObservable();
-  readonly drawingEnd$ = new Subject<InteractionEvent>();
-  readonly drawing$ = this.pointerDown$.asObservable().pipe(
-    switchMap(e =>
-      this.pointerMove$.asObservable().pipe(
-        startWith(e),
-        takeUntil(
-          this.pointerUp$.asObservable().pipe(
-            tap(e => {
-              this.drawingEnd$.next(e);
-            })
-          )
-        ),
-        map(e => ({ x: e.data.global.x, y: e.data.global.y })),
-        pairwise()
-      )
-    )
+  readonly drawingStart$ = this.pointerDown$.asObservable().pipe(
+    tap(e => {
+      this.pointerMove$ = new Subject<InteractionEvent>();
+    }),
+    map(e => this.pointerMove$.asObservable().pipe(startWith(e)))
   );
 
   @ViewChild('canvas') canvasEl?: ElementRef<HTMLCanvasElement>;
 
-  constructor(@Inject(PAINTER_DRAW_FUNC_CONFIG) private drawFuncFactory: drawFuncConfig, private zone: NgZone) {}
+  constructor(private zone: NgZone) {}
 
   ngOnChanges(changes: { width?: number; height?: number }): void {
     if (this.canvasApp && changes) {
@@ -113,59 +69,14 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initCanvasApp();
+  }
 
-    let drawFactory;
-    let startFunc: Function | undefined;
-    let drawFunc: Function | undefined;
-    let completeFunc: Function | undefined;
-
-    this.drawingStart$.subscribe((e: InteractionEvent) => {
-      const fillStyle = {
-        ...this.defaultFill,
-        ...this.fillStyle,
-      };
-      const lineStyle = {
-        ...this.defaultLine,
-        ...this.lineStyle,
-      };
-
-      this.initGraphics(fillStyle, lineStyle);
-
-      drawFactory = this.drawFuncFactory.find(({ type }) => type === this.drawType)?.factory;
-      if (drawFactory) {
-        const { setUp, draw, complete } = drawFactory?.(
-          this.drawingGraphics as Graphics,
-          {
-            fill: fillStyle,
-            line: lineStyle,
-          },
-          this.canvasApp as Application
-        );
-        startFunc = setUp;
-        drawFunc = draw;
-        completeFunc = complete;
-      }
-      startFunc?.(e);
-    });
-
-    this.drawing$.subscribe(e => {
-      drawFunc?.(...e);
-    });
-
-    this.drawingEnd$.subscribe(e => {
-      completeFunc?.(e);
-    });
+  addChild<TChildren extends DisplayObject[]>(...children: TChildren): void {
+    this.mainLayer.addChild(...children);
   }
 
   clear(): void {
     this.mainLayer?.removeChildren();
-  }
-
-  private initGraphics(fillStyle: PainterFillStyle, lineStyle: PainterLineStyle): void {
-    this.drawingGraphics = new Graphics();
-    this.drawingGraphics.lineTextureStyle(lineStyle);
-    this.drawingGraphics.beginTextureFill(fillStyle);
-    this.mainLayer.addChild(this.drawingGraphics);
   }
 
   private initCanvasApp(): void {
@@ -192,11 +103,11 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
       });
 
       this.canvasApp.stage.on('pointerup', (e: InteractionEvent) => {
-        this.pointerUp$.next();
+        this.pointerMove$.complete();
       });
 
       this.canvasApp.stage.on('mouseout', (e: InteractionEvent) => {
-        this.pointerUp$.next();
+        this.pointerMove$.complete();
       });
     });
   }
