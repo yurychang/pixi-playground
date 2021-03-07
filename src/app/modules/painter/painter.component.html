@@ -1,39 +1,79 @@
-<div class="painter" [style.width]="(options.width || 800) + 'px'" [style.height]="(options.height || 800) + 'px'">
-  <div id="main-control">
-    <app-painter-tool-bar [vertical]="true" align="left">
-      <app-painter-tool>
-        <label class="palette-tool" [ngStyle]="{ backgroundColor: fillColor }">
-          F
-          <input type="color" [(ngModel)]="fillColor" />
-        </label>
-      </app-painter-tool>
-      <app-painter-tool>
-        <label class="palette-tool" [ngStyle]="{ backgroundColor: lineColor }">
-          L
-          <input type="color" [(ngModel)]="lineColor" />
-        </label>
-      </app-painter-tool>
-      <app-painter-tool [active]="drawType === DrawType.Pen" (click)="drawType = DrawType.Pen">
-        <fa-icon [icon]="icons.faPen"></fa-icon>
-      </app-painter-tool>
-      <app-painter-tool [active]="drawType === DrawType.Rect" (click)="drawType = DrawType.Rect">Rect</app-painter-tool>
-      <app-painter-tool [active]="drawType === DrawType.Eraser" (click)="drawType = DrawType.Eraser">
-        <fa-icon [icon]="icons.faEraser"></fa-icon>
-      </app-painter-tool>
-      <app-painter-tool fontSize="16px">
-        <input type="number" min="0" max="999" [(ngModel)]="lineStyle.width" />
-      </app-painter-tool>
-      <app-painter-tool bgColor="#eee" (click)="canvas.clear()">c</app-painter-tool>
-    </app-painter-tool-bar>
-  </div>
-  <div class="painter-canvas">
-    <app-painter-canvas
-      #canvas
-      [width]="options.width || 800"
-      [height]="options.height || 800"
-      [fillStyle]="fillStyle"
-      [lineStyle]="lineStyle"
-      [drawType]="drawType"
-    ></app-painter-canvas>
-  </div>
+<div
+    class="painter"
+    [style.width]="(options.width || 800) + 'px'"
+    [style.height]="(options.height || 800) + 'px'"
+>
+    <div id="main-control">
+        <app-painter-tool-bar
+            [vertical]="true"
+            align="left"
+        >
+            <app-painter-tool>
+                <label
+                    class="palette-tool"
+                    [ngStyle]="{ backgroundColor: fillColor }"
+                >
+                    F
+                    <input
+                        type="color"
+                        [(ngModel)]="fillColor"
+                    >
+                </label>
+            </app-painter-tool>
+            <app-painter-tool>
+                <label
+                    class="palette-tool"
+                    [ngStyle]="{ backgroundColor: lineColor }"
+                >
+                    L
+                    <input
+                        type="color"
+                        [(ngModel)]="lineColor"
+                    >
+                </label>
+            </app-painter-tool>
+            <app-painter-tool
+                [active]="drawType === DrawType.Pen"
+                (click)="drawType = DrawType.Pen"
+            >
+                <fa-icon [icon]="icons.faPen"></fa-icon>
+            </app-painter-tool>
+            <app-painter-tool
+                [active]="drawType === DrawType.Rect"
+                (click)="drawType = DrawType.Rect"
+            >
+                Rect
+            </app-painter-tool>
+            <app-painter-tool
+                [active]="drawType === DrawType.Eraser"
+                (click)="drawType = DrawType.Eraser"
+            >
+                <fa-icon [icon]="icons.faEraser"></fa-icon>
+            </app-painter-tool>
+            <app-painter-tool fontSize="16px">
+                <input
+                    type="number"
+                    min="0"
+                    max="999"
+                    [(ngModel)]="lineStyle.width"
+                >
+            </app-painter-tool>
+            <app-painter-tool
+                bgColor="#eee"
+                (click)="canvas.clear()"
+            >
+                c
+            </app-painter-tool>
+        </app-painter-tool-bar>
+    </div>
+    <div class="painter-canvas">
+        <app-painter-canvas
+            #canvas
+            [width]="options.width || 800"
+            [height]="options.height || 800"
+            [fillStyle]="fillStyle"
+            [lineStyle]="lineStyle"
+            [drawType]="drawType"
+        ></app-painter-canvas>
+    </div>
 </div>
