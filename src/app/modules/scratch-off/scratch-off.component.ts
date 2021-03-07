@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild, Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { Graphics } from 'pixi.js';
+import { Graphics, Loader, Matrix, Texture } from 'pixi.js';
 import { createEraser } from '../painter/draw-functions/eraser';
 import { PainterCanvasComponent } from '../painter/painter-canvas/painter-canvas.component';
+
+const brushPath = '../../../assets/brushes/brush_stroke.svg';
 
 @Component({
   selector: 'app-scratch-off',
@@ -11,7 +13,7 @@ import { PainterCanvasComponent } from '../painter/painter-canvas/painter-canvas
 export class ScratchOffComponent implements OnInit, AfterViewInit {
   @Input() width = 400;
   @Input() height = 400;
-  @Input() penWidth = 100;
+  @Input() brushWidth = 50;
   @Input() sensingRange = 50;
 
   scratchState = [
@@ -21,6 +23,8 @@ export class ScratchOffComponent implements OnInit, AfterViewInit {
   ];
 
   scratchPoints?: { x: number; y: number }[][] = [];
+
+  brush?: Texture;
 
   @ViewChild(PainterCanvasComponent) canvas?: PainterCanvasComponent;
 
@@ -37,6 +41,10 @@ export class ScratchOffComponent implements OnInit, AfterViewInit {
       }
       this.scratchPoints?.push(newRow);
     }
+
+    Loader.shared.add('scratch', brushPath).load((loader, resources) => {
+      this.brush = resources.scratch?.texture;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -47,7 +55,9 @@ export class ScratchOffComponent implements OnInit, AfterViewInit {
     this.canvas!.mainLayer.addChild(graphics);
 
     this.canvas!.drawingStart$.subscribe(drawing$ => {
-      const eraser = createEraser(drawing$, { line: { width: this.penWidth } });
+      const eraser = createEraser(drawing$, {
+        line: { width: this.brushWidth, texture: this.brush, matrix: new Matrix(1, 0, 0, 1) },
+      });
       this.canvas?.addChild(eraser);
 
       drawing$.subscribe(e => {
