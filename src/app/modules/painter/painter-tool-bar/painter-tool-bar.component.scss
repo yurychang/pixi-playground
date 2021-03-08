@@ -1,8 +1,10 @@
 $tool-bar-padding-y: 8px;
 $tool-bar-padding-x: 5px;
 $tool-bar-gutter: 10px;
+
 $tool-size: 32px;
 $tool-font-size: 20px;
+$tool-line-height: $tool-size / $tool-font-size;
 
 .painter-tool-bar {
   position: absolute;
@@ -56,7 +58,7 @@ $tool-font-size: 20px;
   justify-content: center;
   width: $tool-size;
   height: $tool-size;
-  line-height: $tool-size / $tool-font-size;
+  line-height: $tool-line-height;
   color: #9a9a9a;
   align-items: center;
   border-radius: 50%;
