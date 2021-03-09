@@ -2,6 +2,6 @@ export const rgbToHex = (r: number, g: number, b: number, useNum = false): strin
   if (useNum) {
     return r * Math.pow(16, 4) + g * Math.pow(16, 2) + b;
   } else {
-    return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+    return `#${r ? r.toString(16) : '00'}${g ? g.toString(16) : '00'}${b ? b.toString(16) : '00'}`;
   }
 };

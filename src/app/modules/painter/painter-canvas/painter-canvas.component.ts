@@ -1,4 +1,13 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, Input, NgZone, OnChanges } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  Input,
+  NgZone,
+  OnChanges,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {
   Application,
   Container,
@@ -23,7 +32,6 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
   @Input() height = 400;
   @Input() fillStyle: PainterFillStyle = {};
   @Input() lineStyle: PainterLineStyle = {};
-  @Input() drawType: any;
 
   canvasApp?: Application;
   backgroundSprite = new Sprite();
@@ -55,7 +63,7 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
 
   @ViewChild('canvas') canvasEl?: ElementRef<HTMLCanvasElement>;
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone, private cd: ChangeDetectorRef) {}
 
   ngOnChanges(changes: { width?: number; height?: number }): void {
     if (this.canvasApp && changes) {
@@ -96,18 +104,23 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
 
       this.canvasApp.stage.on('pointerdown', (e: InteractionEvent) => {
         this.pointerDown$.next(e);
+        console.log(e);
+        this.cd.detectChanges();
       });
 
       this.canvasApp.stage.on('pointermove', (e: InteractionEvent) => {
         this.pointerMove$.next(e);
+        this.cd.detectChanges();
       });
 
       this.canvasApp.stage.on('pointerup', (e: InteractionEvent) => {
         this.pointerMove$.complete();
+        this.cd.detectChanges();
       });
 
       this.canvasApp.stage.on('mouseout', (e: InteractionEvent) => {
         this.pointerMove$.complete();
+        this.cd.detectChanges();
       });
     });
   }
