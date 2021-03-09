@@ -5,7 +5,6 @@ import { DrawFunc } from '../painter-types';
 
 export const createPen: DrawFunc = (drawing$: Observable<InteractionEvent>, { line }) => {
   const graphics = new Graphics();
-  graphics.lineTextureStyle({ ...line, cap: LINE_CAP.ROUND, join: LINE_JOIN.ROUND });
 
   drawing$
     .pipe(
@@ -15,7 +14,18 @@ export const createPen: DrawFunc = (drawing$: Observable<InteractionEvent>, { li
     .subscribe({
       next(pairPosition): void {
         const [from, to] = pairPosition;
-        graphics.moveTo(from.x, from.y).lineTo(to.x, to.y);
+        const matrix = line?.matrix?.clone();
+        matrix?.translate(to.x, to.y);
+
+        graphics
+          .lineTextureStyle({
+            ...line,
+            cap: LINE_CAP.ROUND,
+            join: LINE_JOIN.ROUND,
+            matrix,
+          })
+          .moveTo(from.x, from.y)
+          .lineTo(to.x, to.y);
       },
     });
 

@@ -1,20 +1,21 @@
 <div class="canvas">
-  <app-painter-canvas [width]="width" [height]="height"></app-painter-canvas>
+    <app-painter-canvas
+        [width]="width"
+        [height]="height"
+    ></app-painter-canvas>
 </div>
 <table class="grid">
-  <tr>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-  </tr>
-  <tr>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-  </tr>
-  <tr>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-    <td><div class="scratch-point">x</div></td>
-  </tr>
+    <tbody>
+        <tr *ngFor="let row of scratchState">
+            <td *ngFor="let pointState of row">
+                <div
+                    class="scratch-point"
+                    [style.width]="sensingRange + 'px'"
+                    [style.height]="sensingRange + 'px'"
+                >
+                    {{ pointState }}
+                </div>
+            </td>
+        </tr>
+    </tbody>
 </table>

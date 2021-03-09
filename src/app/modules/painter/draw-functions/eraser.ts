@@ -1,4 +1,4 @@
-import { BLEND_MODES, Graphics, InteractionEvent, LINE_CAP, LINE_JOIN } from 'pixi.js';
+import { BLEND_MODES, Graphics, InteractionEvent, LINE_CAP, LINE_JOIN, Matrix } from 'pixi.js';
 import { Observable } from 'rxjs';
 import { map, pairwise } from 'rxjs/operators';
 import { DrawFunc } from '../painter-types';
@@ -6,7 +6,6 @@ import { DrawFunc } from '../painter-types';
 export const createEraser: DrawFunc = (drawing$: Observable<InteractionEvent>, { line }) => {
   const graphics = new Graphics();
   graphics.blendMode = BLEND_MODES.DST_OUT;
-  graphics.lineTextureStyle({ ...line, color: 0xffffff, cap: LINE_CAP.ROUND, join: LINE_JOIN.ROUND });
 
   drawing$
     .pipe(
@@ -16,7 +15,19 @@ export const createEraser: DrawFunc = (drawing$: Observable<InteractionEvent>, {
     .subscribe({
       next(pairPosition): void {
         const [from, to] = pairPosition;
-        graphics.moveTo(from.x, from.y).lineTo(to.x, to.y);
+        const matrix = line?.matrix?.clone();
+        matrix?.translate(to.x, to.y);
+
+        graphics
+          .lineTextureStyle({
+            ...line,
+            color: 0xffffff,
+            cap: LINE_CAP.ROUND,
+            join: LINE_JOIN.ROUND,
+            matrix,
+          })
+          .moveTo(from.x, from.y)
+          .lineTo(to.x, to.y);
       },
     });
 
