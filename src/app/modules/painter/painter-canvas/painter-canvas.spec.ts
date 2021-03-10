@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Graphics, InteractionEvent } from 'pixi.js';
+import { Graphics, InteractionEvent, utils } from 'pixi.js';
 import { Observable } from 'rxjs';
 import { PainterCanvasComponent } from './painter-canvas.component';
+
+utils.skipHello();
 
 describe('Painter canvas component', () => {
   let fixture: ComponentFixture<PainterCanvasComponent>;
