@@ -84,4 +84,11 @@ export class PainterComponent implements AfterViewInit {
       this.canvas?.addChild(newGraphics);
     });
   }
+
+  save(): string | undefined {
+    if (this.canvas) {
+      return this.canvas.canvasApp?.renderer.plugins.extract.base64(this.canvas.canvasApp.stage);
+    }
+    return;
+  }
 }

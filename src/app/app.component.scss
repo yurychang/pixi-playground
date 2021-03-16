@@ -5,9 +5,5 @@
 
 .grid {
   display: flex;
-
-  &-item {
-    width: 50%;
-    padding: 30px;
-  }
+  flex-wrap: wrap;
 }

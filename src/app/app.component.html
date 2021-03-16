@@ -2,7 +2,12 @@
     <div class="grid">
         <div class="grid-item">
             <h2>painter</h2>
-            <app-painter [options]="painterOptions"></app-painter>
+            <app-painter #painter [options]="painterOptions"></app-painter>
+            <a download="picture.png" [href]="previewImg" (click)="savePainter()">save</a>
+            <ng-container *ngIf="previewImg">
+              <h3>image preview</h3>
+              <img #imagePreview [src]="previewImg" alt="image preview">
+            </ng-container>
         </div>
         <div class="grid-item">
             <h2>Scratch-off</h2>

@@ -104,7 +104,6 @@ export class PainterCanvasComponent implements OnChanges, AfterViewInit {
 
       this.canvasApp.stage.on('pointerdown', (e: InteractionEvent) => {
         this.pointerDown$.next(e);
-        console.log(e);
         this.cd.detectChanges();
       });
 

@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { PainterOptions } from './modules/painter/painter.component';
+import { PainterComponent, PainterOptions } from './modules/painter/painter.component';
 
 @Component({
   selector: 'app-root',
@@ -13,5 +13,15 @@ export class AppComponent {
     height: 400,
   };
 
+  previewImg?: string;
+
+  @ViewChild('painter') painter?: PainterComponent;
+
   constructor(@Inject(DOCUMENT) private document: Document) {}
+
+  savePainter(): void {
+    if (this.painter) {
+      this.previewImg = this.painter.save();
+    }
+  }
 }
