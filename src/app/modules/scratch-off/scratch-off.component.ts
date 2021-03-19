@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChild, Input, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Graphics, Loader, Matrix, Texture } from 'pixi.js';
-import { environment } from 'src/environments/environment';
 import { createEraser } from '../painter/draw-functions/eraser';
 import { PainterCanvasComponent } from '../painter/painter-canvas/painter-canvas.component';
 
-const brushPath = `${environment.baseUrl}/../../../assets/brushes/brush_stroke.svg`;
+const brushPath = `assets/brushes/brush_stroke.svg`;
 
 @Component({
   selector: 'app-scratch-off',
