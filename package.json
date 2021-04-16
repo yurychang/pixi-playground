@@ -6,7 +6,7 @@
     "start": "ng serve --host 0.0.0.0 --disableHostCheck --port 8080",
     "build": "ng build",
     "deploy.gh": "ng deploy --base-href=/pixi-playground/",
-    "test": "ng test",
+    "test": "ng test --browsers=Chrome",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
