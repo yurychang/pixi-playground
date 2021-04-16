@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Graphics, InteractionEvent, settings, utils } from 'pixi.js';
-import { Observable } from 'rxjs';
 import { PainterCanvasComponent } from './painter-canvas.component';
 
 settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT = false;
