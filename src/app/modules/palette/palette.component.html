@@ -1,0 +1,37 @@
+<div class="palette">
+    <div class="palette-color-picker">
+        <canvas #colorPicker></canvas>
+    </div>
+    <div class="palette-body">
+        <div class="palette-control-panel">
+            <div>
+                <button class="palette-color-display">
+                    <i class="palette-color-display-copy-icon"></i>
+                </button>
+            </div>
+            <div>
+                <div class="palette-color-slider">
+                    <div class="palette-color-slider-tracker">
+                        <canvas #mainColorTracker></canvas>
+                    </div>
+                    <div
+                        #mainColorSliderThumb
+                        (mousedown)="mainColorPickerDown$.next($event)"
+                        [style.left]="mainColorThumbX + '%'"
+                        class="palette-color-slider-thumb"
+                    ></div>
+                </div>
+                <div class="palette-color-slider">
+                    <!-- <canvas #opacitySlider></canvas> -->
+                </div>
+            </div>
+        </div>
+        <div class="palette-color-label">
+            <input
+                type="color"
+                class="palette-hex-control"
+                value="#e66465"
+            >
+        </div>
+    </div>
+</div>

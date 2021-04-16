@@ -1,0 +1,144 @@
+canvas {
+  display: block;
+}
+
+.palette {
+  display: inline-block;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px 1px #d3d3d3;
+
+  &-body {
+    padding: 13px 15px;
+  }
+
+  &-color-display {
+    display: block;
+    position: relative;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover::before {
+      display: block;
+    }
+
+    &:hover & {
+      &-copy-icon {
+        display: block;
+      }
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      display: none;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: #000;
+      opacity: 0.3;
+    }
+
+    &-copy-icon {
+      position: relative;
+      display: none;
+      width: 100%;
+      height: 100%;
+
+      &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        // display: none;
+        width: 30%;
+        height: 35%;
+        border: 1px solid #fff;
+      }
+
+      &::before {
+        border-right: 0;
+        border-bottom: 0;
+        transform: translate(-60%, -60%);
+      }
+
+      &::after {
+        transform: translate(-40%, -40%);
+      }
+    }
+  }
+
+  &-control-panel {
+    display: flex;
+    align-items: stretch;
+
+    > :nth-child(2) {
+      margin-left: 15px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+
+  &-color-slider {
+    position: relative;
+    width: 120px;
+    height: 12px;
+
+    &-tracker {
+      height: 100%;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    &-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #fff;
+      box-shadow: 0 1px 2px 1px #b4b4b4;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+  }
+
+  &-color-label {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+
+    input {
+      border: 1px solid #d1d1d1;
+      border-radius: 2px;
+      text-align: center;
+      color: #5e5e5e;
+      font-size: 12px;
+      line-height: 1.5;
+
+      &:focus {
+        outline: none;
+        border-color: #5e5e5e;
+      }
+    }
+  }
+
+  &-hex-control {
+    max-width: 160px;
+    margin: 0 auto;
+  }
+}
