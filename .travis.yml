@@ -1,16 +1,26 @@
 language: node_js
 node_js:
-  - "14"
+  - '14'
 
 addons:
   chrome: stable
 
 cache:
   directories:
-     - ./node_modules
+    - ./node_modules
 
 install:
   - npm install
 
 script:
   - npm run test:ci
+  - npm run build.gh
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  local_dir: dist/pixi-playground
+  on:
+    branch: tmp
